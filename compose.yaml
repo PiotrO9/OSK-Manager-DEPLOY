@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: ../BE
+    restart: unless-stopped
+    env_file:
+      - ../BE/.env
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: ../FE/OSK-Manager-FE
+    restart: unless-stopped
+    env_file:
+      - ../FE/OSK-Manager-FE/.env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
