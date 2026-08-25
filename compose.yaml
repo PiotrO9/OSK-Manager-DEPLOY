@@ -1,4 +1,27 @@
 services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-osk_manager}
+      POSTGRES_USER: ${POSTGRES_USER:-osk_manager}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-generate-a-strong-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-osk_manager} -d ${POSTGRES_DB:-osk_manager}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ../BE
@@ -21,3 +44,6 @@ services:
       - "3000:3000"
     depends_on:
       - api
+
+volumes:
+  postgres_data:
