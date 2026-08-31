@@ -1,0 +1,52 @@
+name: Homelab deploy
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: homelab-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64, homelab, deploy]
+
+    steps:
+      - name: Print runner info
+        run: |
+          hostname
+          whoami
+          pwd
+
+      - name: Update backend repository
+        run: |
+          cd /srv/apps/OSK-Manager/BE
+          git pull --ff-only
+
+      - name: Update frontend repository
+        run: |
+          cd /srv/apps/OSK-Manager/FE/OSK-Manager-FE
+          git pull --ff-only
+
+      - name: Update deploy repository
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          git pull --ff-only
+
+      - name: Rebuild and restart containers
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          docker compose --profile postgres up -d --build
+
+      - name: Show container status
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          docker compose --profile postgres ps
+
+      - name: Check backend health
+        run: |
+          curl --fail --silent --show-error http://localhost:3001/health
+
+      - name: Check frontend response
+        run: |
+          curl --fail --silent --show-error http://localhost:3000 > /dev/null
