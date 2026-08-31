@@ -1,6 +1,12 @@
 name: Homelab deploy
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - compose.yaml
+      - .github/workflows/deploy.yml
   workflow_dispatch:
 
 concurrency:
