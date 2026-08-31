@@ -65,4 +65,14 @@ jobs:
 
       - name: Check frontend response
         run: |
-          curl --fail --silent --show-error http://localhost:3000 > /dev/null
+          cd /srv/apps/OSK-Manager/deploy
+          for i in {1..30}; do
+            if curl --fail --silent --show-error http://localhost:3000 > /dev/null; then
+              exit 0
+            fi
+            echo "Frontend not ready yet, retry $i/30..."
+            sleep 2
+          done
+
+          docker compose --profile postgres logs frontend --tail=100
+          exit 1
