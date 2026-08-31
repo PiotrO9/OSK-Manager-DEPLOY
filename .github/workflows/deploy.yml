@@ -45,7 +45,17 @@ jobs:
 
       - name: Check backend health
         run: |
-          curl --fail --silent --show-error http://localhost:3001/health
+          cd /srv/apps/OSK-Manager/deploy
+          for i in {1..30}; do
+            if curl --fail --silent --show-error http://localhost:3001/health; then
+              exit 0
+            fi
+            echo "Backend not ready yet, retry $i/30..."
+            sleep 2
+          done
+
+          docker compose --profile postgres logs api --tail=100
+          exit 1
 
       - name: Check frontend response
         run: |
