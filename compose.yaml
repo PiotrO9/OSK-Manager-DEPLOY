@@ -31,6 +31,19 @@ services:
     ports:
       - "3001:3001"
 
+  api-migrations:
+    build:
+      context: ../BE
+      target: build
+    profiles:
+      - migrate
+    env_file:
+      - ../BE/.env
+    command: npx prisma migrate deploy
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   frontend:
     build:
       context: ../FE/OSK-Manager-FE

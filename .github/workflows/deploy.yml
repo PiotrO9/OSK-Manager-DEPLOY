@@ -39,6 +39,11 @@ jobs:
           cd /srv/apps/OSK-Manager/deploy
           git pull --ff-only
 
+      - name: Run database migrations
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          docker compose --profile postgres --profile migrate run --rm api-migrations
+
       - name: Rebuild and restart containers
         run: |
           cd /srv/apps/OSK-Manager/deploy
@@ -62,6 +67,11 @@ jobs:
 
           docker compose --profile postgres logs api --tail=100
           exit 1
+
+      - name: Check backend smoke endpoint
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          curl --fail --silent --show-error http://localhost:3001/test
 
       - name: Check frontend response
         run: |
