@@ -44,10 +44,15 @@ jobs:
           cd /srv/apps/OSK-Manager/deploy
           docker compose --profile postgres --profile migrate run --rm api-migrations
 
-      - name: Rebuild and restart containers
+      - name: Pull application images
         run: |
           cd /srv/apps/OSK-Manager/deploy
-          docker compose --profile postgres up -d --build
+          docker compose --profile postgres pull api frontend
+
+      - name: Restart containers
+        run: |
+          cd /srv/apps/OSK-Manager/deploy
+          docker compose --profile postgres up -d
 
       - name: Show container status
         run: |
