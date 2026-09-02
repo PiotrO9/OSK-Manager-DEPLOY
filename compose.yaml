@@ -23,7 +23,7 @@ services:
       retries: 5
 
   api:
-    image: ghcr.io/piotro9/osk-manager-api:latest
+    image: ghcr.io/piotro9/osk-manager-api:${API_IMAGE_TAG:-latest}
     restart: unless-stopped
     env_file:
       - ../BE/.env
@@ -44,7 +44,7 @@ services:
         condition: service_healthy
 
   frontend:
-    image: ghcr.io/piotro9/osk-manager-frontend:latest
+    image: ghcr.io/piotro9/osk-manager-frontend:${FRONTEND_IMAGE_TAG:-latest}
     restart: unless-stopped
     env_file:
       - ../FE/OSK-Manager-FE/.env
